@@ -41,6 +41,7 @@ After starting the application, open your web browser and visit `http://localhos
 ## Project Structure
 Here’s a brief overview of the project structure:
 
+```
 JR-AI-Chat-app/
 ├── public/
 │   ├── index.html
@@ -66,7 +67,7 @@ JR-AI-Chat-app/
 ├── package.json
 ├── LICENSE
 └── README.md
-
+```
 
 ## Contributing
 We welcome contributions to JR-AI-Chat-app! To contribute, follow these steps:
