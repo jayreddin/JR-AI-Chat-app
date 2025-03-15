@@ -1,4 +1,4 @@
-# JR-AI-Chat-app
+# [JR-AI-Chat-app](https://jayreddin.github.io/JR-AI-Chat-app/)
 
 ## Overview
 JR-AI-Chat-app is a sophisticated chat application powered by Artificial Intelligence. It is designed to provide users with an enhanced chatting experience through real-time messaging and AI-driven features.
