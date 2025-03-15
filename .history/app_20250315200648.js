@@ -165,7 +165,7 @@ function initApp() {
 
     // Add a welcome message regardless
     if (chatHistory.children.length === 0) {
-        addAIMessage("Welcome to JR AI Chat! \n\nSelect a model from the dropdown above and start chatting. You can also try our other AI features like image generation, OCR, and text-to-speech by clicking the AI Features button.");
+        addAIMessage("# Welcome to JR AI Chat! \n\nSelect a model from the dropdown above and start chatting. You can also try our other AI features like image generation, OCR, and text-to-speech by clicking the AI Features button.");
     }
 
     // Create tools and MCP info banner
@@ -2927,15 +2927,9 @@ function saveTools() {
         }
     });
 
-    // Get active tools
-    const activeTools = toolsDatabase
-        .filter(tool => tool.isActive)
-        .map(tool => tool.name);
-
-    // Save to localStorage
-    saveActiveTools(activeTools);
-
-    console.log('Active tools saved:', activeTools);
+    // Log active tools
+    const activeTools = toolsDatabase.filter(tool => tool.isActive);
+    console.log('Active tools:', activeTools);
 
     closeModals();
 }
@@ -3416,23 +3410,10 @@ function openAddMcpServerModal() {
 }
 
 function saveMcp() {
-    // Get all MCP server checkboxes
-    const mcpItems = document.querySelectorAll('#mcp-installed-list .mcp-item');
-    const activeMcpServers = [];
+    // Save MCP settings
+    console.log('Saving MCP settings');
 
-    mcpItems.forEach(item => {
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        const label = item.querySelector('label').textContent;
-
-        if (checkbox && checkbox.checked) {
-            activeMcpServers.push(label);
-        }
-    });
-
-    // Save to localStorage
-    saveActiveMcpServers(activeMcpServers);
-
-    console.log('Active MCP servers saved:', activeMcpServers);
+    // In a real app, you would save the active servers to localStorage or a database
 
     closeModals();
 }
@@ -4371,69 +4352,23 @@ function updateInfoBanner() {
     const mcpValue = document.querySelector('.mcp-info .info-value');
 
     if (toolsValue) {
-        // Get active tools from localStorage
-        const activeTools = getActiveTools();
-        if (activeTools.length > 0) {
-            toolsValue.textContent = activeTools.join(', ');
-        } else {
-            toolsValue.textContent = 'None';
-        }
+        // In a real implementation, you would get the active tools from a configuration
+        const activeTools = ['websearch', 'imagerecognition', 'weather', 'translate'];
+        toolsValue.textContent = activeTools.join(', ');
     }
 
     if (mcpValue) {
-        // Get active MCP servers from localStorage
-        const activeMcpServers = getActiveMcpServers();
-        if (activeMcpServers.length > 0) {
-            mcpValue.textContent = activeMcpServers.join(', ');
-        } else {
-            mcpValue.textContent = 'None';
-        }
+        // In a real implementation, you would get the active MCP servers from a configuration
+        const activeMcpServers = ['Local MCP'];
+        mcpValue.textContent = activeMcpServers.join(', ');
     }
 
     // Adjust the layout of the info banner
     const infoBanner = document.querySelector('.info-banner');
     if (infoBanner) {
         infoBanner.style.display = 'flex';
-        infoBanner.style.justifyContent = 'center'; // Center the banner
+        infoBanner.style.justifyContent = 'flex-start'; // Align items to the left
     }
-}
-
-// Get active tools from localStorage
-function getActiveTools() {
-    const savedTools = localStorage.getItem('active-tools');
-    if (savedTools) {
-        return JSON.parse(savedTools);
-    }
-
-    // Default tools
-    const defaultTools = ['websearch', 'imagerecognition', 'weather', 'translate'];
-    localStorage.setItem('active-tools', JSON.stringify(defaultTools));
-    return defaultTools;
-}
-
-// Get active MCP servers from localStorage
-function getActiveMcpServers() {
-    const savedMcpServers = localStorage.getItem('active-mcp-servers');
-    if (savedMcpServers) {
-        return JSON.parse(savedMcpServers);
-    }
-
-    // Default MCP server
-    const defaultMcpServers = ['Local MCP'];
-    localStorage.setItem('active-mcp-servers', JSON.stringify(defaultMcpServers));
-    return defaultMcpServers;
-}
-
-// Save active tools to localStorage
-function saveActiveTools(tools) {
-    localStorage.setItem('active-tools', JSON.stringify(tools));
-    updateInfoBanner();
-}
-
-// Save active MCP servers to localStorage
-function saveActiveMcpServers(mcpServers) {
-    localStorage.setItem('active-mcp-servers', JSON.stringify(mcpServers));
-    updateInfoBanner();
 }
 
 // Handle message input for tool suggestions and agent commands
@@ -4588,9 +4523,9 @@ function updateTextSizeFromInput(e) {
     let size = e.target.value;
 
     // Validate the input
-    if (size < 60) {
-        size = 60;
-        e.target.value = 60;
+    if (size < 50) {
+        size = 50;
+        e.target.value = 50;
     }
     if (size > 200) {
         size = 200;
@@ -4691,14 +4626,14 @@ function clearTerminal() {
 
 function requestLocationAccess() {
     const locationBtn = document.getElementById('location-access-btn');
-    const locationBox = document.createElement('div');
-    locationBox.id = 'location-box';
-    locationBox.className = 'location-box';
+    const locationLabel = document.createElement('div');
+    locationLabel.id = 'location-coordinates';
+    locationLabel.className = 'location-coordinates';
 
-    // Remove existing box if any
-    const existingBox = document.getElementById('location-box');
-    if (existingBox) {
-        existingBox.remove();
+    // Remove existing label if any
+    const existingLabel = document.getElementById('location-coordinates');
+    if (existingLabel) {
+        existingLabel.remove();
     }
 
     if (navigator.geolocation) {
@@ -4718,23 +4653,9 @@ function requestLocationAccess() {
                 locationBtn.disabled = false;
                 locationBtn.textContent = 'Enable Precise Location';
 
-                // Create coordinates display
-                const coordsText = document.createElement('div');
-                coordsText.className = 'location-coordinates';
-                coordsText.textContent = `Coordinates: ${lat}, ${lng}`;
-
-                // Create map button
-                const mapBtn = document.createElement('button');
-                mapBtn.className = 'feature-btn map-btn';
-                mapBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Display on Map';
-                mapBtn.addEventListener('click', () => showLocationMap(lat, lng));
-
-                // Add to location box
-                locationBox.appendChild(coordsText);
-                locationBox.appendChild(mapBtn);
-
-                // Add location box to DOM
-                locationBtn.parentNode.appendChild(locationBox);
+                // Add coordinates label
+                locationLabel.textContent = `Coordinates: ${lat}, ${lng}`;
+                locationBtn.parentNode.appendChild(locationLabel);
 
                 console.log(`Location access granted! Latitude: ${lat}, Longitude: ${lng}`);
             },
@@ -4743,84 +4664,22 @@ function requestLocationAccess() {
                 locationBtn.disabled = false;
                 locationBtn.textContent = 'Enable Precise Location';
 
-                // Add error message
-                const errorText = document.createElement('div');
-                errorText.className = 'location-error';
-                errorText.textContent = `Error: ${error.message}`;
-                locationBox.appendChild(errorText);
-
-                // Add location box to DOM
-                locationBtn.parentNode.appendChild(locationBox);
+                // Add error label
+                locationLabel.textContent = `Error: ${error.message}`;
+                locationLabel.style.color = 'red';
+                locationBtn.parentNode.appendChild(locationLabel);
 
                 localStorage.setItem('location-access', 'false');
                 console.error(`Error getting location: ${error.message}`);
             }
         );
     } else {
-        const errorText = document.createElement('div');
-        errorText.className = 'location-error';
-        errorText.textContent = 'Geolocation is not supported by this browser.';
-        locationBox.appendChild(errorText);
-
-        // Add location box to DOM
-        locationBtn.parentNode.appendChild(locationBox);
+        locationLabel.textContent = 'Geolocation is not supported by this browser.';
+        locationLabel.style.color = 'red';
+        locationBtn.parentNode.appendChild(locationLabel);
 
         console.error('Geolocation is not supported by this browser.');
     }
-}
-
-function showLocationMap(lat, lng) {
-    // Create map modal
-    const mapModal = document.createElement('div');
-    mapModal.className = 'modal';
-    mapModal.id = 'map-modal';
-    mapModal.style.display = 'block';
-
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-
-    const closeBtn = document.createElement('span');
-    closeBtn.className = 'close-modal';
-    closeBtn.innerHTML = '&times;';
-    closeBtn.addEventListener('click', () => document.body.removeChild(mapModal));
-
-    const title = document.createElement('h3');
-    title.textContent = 'Your Location';
-
-    const mapContainer = document.createElement('div');
-    mapContainer.id = 'map-container';
-    mapContainer.style.width = '100%';
-    mapContainer.style.height = '400px';
-    mapContainer.style.marginTop = '15px';
-
-    // Create iframe with OpenStreetMap
-    const mapIframe = document.createElement('iframe');
-    mapIframe.width = '100%';
-    mapIframe.height = '100%';
-    mapIframe.frameBorder = '0';
-    mapIframe.scrolling = 'no';
-    mapIframe.marginHeight = '0';
-    mapIframe.marginWidth = '0';
-    mapIframe.src = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
-
-    mapContainer.appendChild(mapIframe);
-
-    // Add link to open in full map
-    const mapLink = document.createElement('a');
-    mapLink.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`;
-    mapLink.target = '_blank';
-    mapLink.textContent = 'View on OpenStreetMap';
-    mapLink.style.display = 'block';
-    mapLink.style.marginTop = '10px';
-    mapLink.style.textAlign = 'center';
-
-    modalContent.appendChild(closeBtn);
-    modalContent.appendChild(title);
-    modalContent.appendChild(mapContainer);
-    modalContent.appendChild(mapLink);
-
-    mapModal.appendChild(modalContent);
-    document.body.appendChild(mapModal);
 }
 
 // Initialize compact mode
@@ -4870,28 +4729,14 @@ function restoreLocationCoordinates() {
         try {
             const coords = JSON.parse(locationCoords);
 
-            // Create location box
-            const locationBox = document.createElement('div');
-            locationBox.id = 'location-box';
-            locationBox.className = 'location-box';
-
-            // Create coordinates display
-            const coordsText = document.createElement('div');
-            coordsText.className = 'location-coordinates';
-            coordsText.textContent = `Coordinates: ${coords.lat}, ${coords.lng}`;
-
-            // Create map button
-            const mapBtn = document.createElement('button');
-            mapBtn.className = 'feature-btn map-btn';
-            mapBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Display on Map';
-            mapBtn.addEventListener('click', () => showLocationMap(coords.lat, coords.lng));
-
-            // Add to location box
-            locationBox.appendChild(coordsText);
-            locationBox.appendChild(mapBtn);
+            // Create label
+            const locationLabel = document.createElement('div');
+            locationLabel.id = 'location-coordinates';
+            locationLabel.className = 'location-coordinates';
+            locationLabel.textContent = `Coordinates: ${coords.lat}, ${coords.lng}`;
 
             // Add to DOM
-            locationBtn.parentNode.appendChild(locationBox);
+            locationBtn.parentNode.appendChild(locationLabel);
 
             console.log(`Restored location coordinates: ${coords.lat}, ${coords.lng}`);
         } catch (error) {
@@ -4931,75 +4776,19 @@ function extractTextFromImage(imageElement) {
         const aiMessages = document.querySelectorAll('.ai-message');
         const lastAiMessage = aiMessages[aiMessages.length - 1];
 
-        // Sample extracted text
-        const extractedText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+        lastAiMessage.innerHTML = formatMessage("Text extracted from image:\n\n" +
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
             "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " +
-            "nisi ut aliquip ex ea commodo consequat.";
-
-        // Create text display box
-        const textBox = document.createElement('div');
-        textBox.className = 'extracted-text-box';
-
-        // Add header
-        const header = document.createElement('div');
-        header.className = 'extracted-text-header';
-        header.textContent = 'Extracted Text';
-
-        // Add text area
-        const textArea = document.createElement('textarea');
-        textArea.className = 'extracted-text-content';
-        textArea.value = extractedText;
-        textArea.readOnly = true;
-
-        // Add copy button
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'feature-btn';
-        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Text';
-        copyBtn.addEventListener('click', () => {
-            textArea.select();
-            document.execCommand('copy');
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => {
-                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Text';
-            }, 2000);
-        });
-
-        // Add elements to text box
-        textBox.appendChild(header);
-        textBox.appendChild(textArea);
-        textBox.appendChild(copyBtn);
-
-        // Update message
-        lastAiMessage.innerHTML = formatMessage("Text extracted from image:");
-        lastAiMessage.appendChild(textBox);
+            "nisi ut aliquip ex ea commodo consequat.");
 
         // Close the modal
         closeAiFeaturesModal();
     }, 2000);
 }
 
-// Text to speech variables
-let isTtsActive = false;
-let ttsForAiResponses = false;
-
 // Text to speech function
 function textToSpeech(text) {
-    if (!text) {
-        // Ask user to type a message
-        addAIMessage("Please type a message that you'd like me to read aloud.");
-
-        // Set flag to activate TTS for next user message
-        isTtsActive = true;
-
-        // Add TTS indicator to the UI
-        addTtsIndicator();
-
-        // Close the modal
-        closeAiFeaturesModal();
-        return;
-    }
-
     // Show loading state
     addAIMessage("Converting text to speech...");
 
@@ -5014,83 +4803,13 @@ function textToSpeech(text) {
         audioElement.controls = true;
         audioElement.src = 'data:audio/mp3;base64,AAAAAAAA'; // Placeholder
 
-        // Create TTS controls
-        const ttsControls = document.createElement('div');
-        ttsControls.className = 'tts-controls';
-
-        const readAiResponsesLabel = document.createElement('label');
-        readAiResponsesLabel.innerHTML = `
-            <input type="checkbox" id="tts-ai-responses" ${ttsForAiResponses ? 'checked' : ''}>
-            Also read AI responses
-        `;
-
-        const stopTtsBtn = document.createElement('button');
-        stopTtsBtn.className = 'feature-btn';
-        stopTtsBtn.innerHTML = '<i class="fas fa-stop"></i> Stop TTS';
-        stopTtsBtn.addEventListener('click', stopTextToSpeech);
-
-        ttsControls.appendChild(readAiResponsesLabel);
-        ttsControls.appendChild(stopTtsBtn);
-
         // Update message
         lastAiMessage.innerHTML = formatMessage("Text converted to speech:");
         lastAiMessage.appendChild(audioElement);
-        lastAiMessage.appendChild(ttsControls);
-
-        // Set up event listener for the checkbox
-        const aiResponsesCheckbox = document.getElementById('tts-ai-responses');
-        if (aiResponsesCheckbox) {
-            aiResponsesCheckbox.addEventListener('change', (e) => {
-                ttsForAiResponses = e.target.checked;
-                localStorage.setItem('tts-for-ai-responses', ttsForAiResponses);
-            });
-        }
 
         // Close the modal
         closeAiFeaturesModal();
     }, 2000);
-}
-
-// Add TTS indicator to the UI
-function addTtsIndicator() {
-    // Remove existing indicator if any
-    const existingIndicator = document.getElementById('tts-indicator');
-    if (existingIndicator) {
-        existingIndicator.remove();
-    }
-
-    // Create indicator
-    const indicator = document.createElement('div');
-    indicator.id = 'tts-indicator';
-    indicator.className = 'tts-indicator';
-    indicator.innerHTML = '<i class="fas fa-volume-up"></i> TTS Active';
-
-    // Add stop button
-    const stopBtn = document.createElement('button');
-    stopBtn.className = 'tts-stop-btn';
-    stopBtn.innerHTML = '<i class="fas fa-stop"></i>';
-    stopBtn.title = 'Stop TTS';
-    stopBtn.addEventListener('click', stopTextToSpeech);
-
-    indicator.appendChild(stopBtn);
-
-    // Add to DOM
-    document.querySelector('.chat-container').appendChild(indicator);
-}
-
-// Stop text to speech
-function stopTextToSpeech() {
-    isTtsActive = false;
-    ttsForAiResponses = false;
-
-    // Remove TTS indicator
-    const indicator = document.getElementById('tts-indicator');
-    if (indicator) {
-        indicator.remove();
-    }
-
-    // Add message
-    addAIMessage("Text-to-speech has been deactivated.");
 }
 
 // Agent functions
