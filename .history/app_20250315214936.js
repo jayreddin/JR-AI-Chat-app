@@ -233,8 +233,6 @@ function initApp() {
         openUploadModal();
         // Set a flag to indicate we're doing OCR
         sessionStorage.setItem('upload-purpose', 'ocr');
-        // Set z-index higher than the AI features modal
-        document.getElementById('upload-modal').style.zIndex = '101';
     });
     document.getElementById('txt2speech-feature-btn').addEventListener('click', () => {
         // Get the last AI message
@@ -1601,21 +1599,7 @@ async function generateImage() {
 
     isProcessing = true;
     generateImgBtn.textContent = 'Generating...';
-
-    // Create placeholders for the images with progress bars
-    imgResult.innerHTML = '';
-    const placeholders = [];
-
-    for (let i = 0; i < count; i++) {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'generating-image-container';
-        placeholder.innerHTML = `
-            <div>Generating image ${i + 1} of ${count}...</div>
-            <div class="image-progress-bar" id="progress-${i}"></div>
-        `;
-        imgResult.appendChild(placeholder);
-        placeholders.push(placeholder);
-    }
+    imgResult.innerHTML = '<p>Creating your image(s), please wait...</p>';
 
     try {
         // In a real implementation, we would pass all these parameters to the API
@@ -1623,9 +1607,6 @@ async function generateImage() {
         const images = [];
 
         for (let i = 0; i < count; i++) {
-            // Start progress animation
-            simulateProgress(`progress-${i}`);
-
             // Add a small delay between requests to avoid rate limiting
             if (i > 0) {
                 await new Promise(resolve => setTimeout(resolve, 500));
@@ -1635,10 +1616,73 @@ async function generateImage() {
             // In a real implementation, we would pass all the parameters
             const image = await puter.ai.txt2img(prompt);
             images.push(image);
-
-            // Update placeholder with the actual image
-            updatePlaceholderWithImage(placeholders[i], image, i, prompt, format);
         }
+
+        // Display the generated images
+        imgResult.innerHTML = '';
+
+        images.forEach((image, index) => {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'generated-image-container';
+
+            const img = document.createElement('img');
+            img.src = image;
+            img.alt = `Generated image ${index + 1}`;
+            img.style.maxWidth = '100%';
+            img.style.borderRadius = '8px';
+            img.style.marginBottom = '10px';
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'image-actions';
+
+            // Download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'feature-btn';
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `generated-image-${Date.now()}.${format}`;
+                link.click();
+            };
+
+            // Send to chat button
+            const sendBtn = document.createElement('button');
+            sendBtn.className = 'feature-btn';
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to Chat';
+            sendBtn.onclick = () => {
+                addUserMessage(`I generated this image with the prompt: "${prompt}"`);
+
+                const aiMessageElement = document.createElement('div');
+                aiMessageElement.className = 'message ai-message';
+
+                const imgElement = document.createElement('img');
+                imgElement.src = image;
+                imgElement.style.maxWidth = '100%';
+                imgElement.style.borderRadius = '4px';
+                imgElement.style.marginTop = '10px';
+
+                aiMessageElement.innerHTML = 'Here\'s the image I generated:';
+                aiMessageElement.appendChild(imgElement);
+
+                // Add timestamp
+                addTimestampToMessage(aiMessageElement);
+
+                chatHistory.appendChild(aiMessageElement);
+                scrollToBottom();
+
+                closeModals();
+            };
+
+            actionsDiv.appendChild(downloadBtn);
+            actionsDiv.appendChild(sendBtn);
+
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(actionsDiv);
+
+            imgResult.appendChild(imageContainer);
+        });
+
     } catch (error) {
         imgResult.innerHTML = `<p>Error: ${error.message}</p>`;
         console.error('Image generation error:', error);
@@ -1648,133 +1692,9 @@ async function generateImage() {
     isProcessing = false;
 }
 
-// Simulate progress for image generation
-function simulateProgress(progressBarId) {
-    const progressBar = document.getElementById(progressBarId);
-    if (!progressBar) return;
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 95) {
-            clearInterval(interval);
-        } else {
-            width += Math.random() * 5;
-            if (width > 95) width = 95;
-            progressBar.style.width = width + '%';
-        }
-    }, 200);
-
-    // Store the interval ID on the progress bar element
-    progressBar.dataset.intervalId = interval;
-}
-
-// Update placeholder with the actual image
-function updatePlaceholderWithImage(placeholder, image, index, prompt, format) {
-    // Clear any ongoing progress animation
-    const progressBar = placeholder.querySelector('.image-progress-bar');
-    if (progressBar && progressBar.dataset.intervalId) {
-        clearInterval(parseInt(progressBar.dataset.intervalId));
-    }
-
-    // Set progress to 100%
-    if (progressBar) {
-        progressBar.style.width = '100%';
-    }
-
-    // Replace placeholder content with the image
-    placeholder.innerHTML = '';
-    placeholder.className = 'generated-image-container';
-
-    const img = document.createElement('img');
-    img.src = image;
-    img.alt = `Generated image ${index + 1}`;
-    img.style.maxWidth = '100%';
-    img.style.borderRadius = '8px';
-    img.style.marginBottom = '10px';
-
-    const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'image-actions';
-
-    // Download button
-    const downloadBtn = document.createElement('button');
-    downloadBtn.className = 'feature-btn';
-    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
-    downloadBtn.onclick = () => {
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = `generated-image-${Date.now()}.${format}`;
-        link.click();
-    };
-
-    // Send to chat button
-    const sendBtn = document.createElement('button');
-    sendBtn.className = 'feature-btn';
-    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to Chat';
-    sendBtn.onclick = () => {
-        addUserMessage(`I generated this image with the prompt: "${prompt}"`);
-
-        const aiMessageElement = document.createElement('div');
-        aiMessageElement.className = 'message ai-message';
-
-        const imgElement = document.createElement('img');
-        imgElement.src = image;
-        imgElement.style.maxWidth = '100%';
-        imgElement.style.borderRadius = '4px';
-        imgElement.style.marginTop = '10px';
-
-        aiMessageElement.innerHTML = 'Here\'s the image I generated:';
-        aiMessageElement.appendChild(imgElement);
-
-        // Add timestamp
-        addTimestampToMessage(aiMessageElement);
-
-        chatHistory.appendChild(aiMessageElement);
-        scrollToBottom();
-
-        closeModals();
-    };
-
-    actionsDiv.appendChild(downloadBtn);
-    actionsDiv.appendChild(sendBtn);
-
-    placeholder.appendChild(img);
-    placeholder.appendChild(actionsDiv);
-}
-
 // Image to Text (OCR) functions
 function openUploadModal() {
     uploadModal.style.display = 'block';
-
-    // Check if we're doing OCR
-    if (sessionStorage.getItem('upload-purpose') === 'ocr') {
-        // Update the title
-        const modalTitle = uploadModal.querySelector('h3');
-        if (modalTitle) {
-            modalTitle.textContent = 'Extract Text from Image';
-        }
-
-        // Update the button text
-        if (processImageBtn) {
-            processImageBtn.textContent = 'Extract Text';
-        }
-
-        // Set z-index higher than the AI features modal
-        uploadModal.style.zIndex = '101';
-    } else {
-        // Reset to default
-        const modalTitle = uploadModal.querySelector('h3');
-        if (modalTitle) {
-            modalTitle.textContent = 'Upload Image';
-        }
-
-        // Reset button text
-        if (processImageBtn) {
-            processImageBtn.textContent = 'Process Image';
-        }
-
-        // Reset z-index
-        uploadModal.style.zIndex = '';
-    }
 }
 
 function previewImage(e) {
@@ -1802,18 +1722,8 @@ async function processImage() {
         // Check if we're doing OCR
         const isOcr = sessionStorage.getItem('upload-purpose') === 'ocr';
 
-        // Read the file as a data URL
-        const fileReader = new FileReader();
-        const fileDataPromise = new Promise((resolve, reject) => {
-            fileReader.onload = () => resolve(fileReader.result);
-            fileReader.onerror = reject;
-            fileReader.readAsDataURL(file);
-        });
-
-        const fileData = await fileDataPromise;
-
-        // Call the Puter OCR API with the data URL
-        const extractedText = await puter.ai.img2txt(fileData);
+        // Call the Puter OCR API
+        const extractedText = await puter.ai.img2txt(file);
 
         // Send to chat
         addUserMessage('I uploaded an image for text extraction');

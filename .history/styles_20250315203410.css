@@ -1752,10 +1752,6 @@ input[type="number"] {
     color: #f0f0f0;
 }
 
-.dark-mode .app-container {
-    background-color: #1e1e1e;
-}
-
 .dark-mode .chat-container {
     background-color: #2d2d2d;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -2032,38 +2028,6 @@ input[type="number"] {
     gap: 8px;
 }
 
-/* TTS Message Button */
-.tts-message-btn {
-    position: absolute;
-    top: 10px;
-    right: -30px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.ai-message .tts-message-btn {
-    right: auto;
-    left: -30px;
-}
-
-.message:hover .tts-message-btn {
-    opacity: 1;
-}
-
-.tts-message-btn:hover {
-    background-color: #2980b9;
-}
-
 /* Extracted Text Box */
 .extracted-text-box {
     margin-top: 10px;
@@ -2103,82 +2067,6 @@ input[type="number"] {
 .dark-mode .extracted-text-content {
     background-color: #3d3d3d;
     color: #f0f0f0;
-}
-
-/* Form layout for image generation */
-.form-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.half-width {
-    flex: 1;
-    min-width: 0;
-}
-
-.text-center {
-    text-align: center;
-}
-
-/* Image generation modal */
-#txt2img-modal .modal-content {
-    max-width: 600px;
-    text-align: center;
-}
-
-#txt2img-modal .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-#txt2img-modal .form-row {
-    justify-content: center;
-}
-
-#img-prompt {
-    height: 100px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: none;
-    font-family: inherit;
-    width: 100%;
-}
-
-#generate-img-btn {
-    margin: 15px auto;
-    display: block;
-    min-width: 150px;
-}
-
-/* Image generation progress */
-.generating-image-container {
-    position: relative;
-    margin: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f5f5f5;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-progress-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 5px;
-    background-color: #3498db;
-    width: 0%;
-    transition: width 0.3s ease;
-}
-
-.dark-mode .generating-image-container {
-    background-color: #3d3d3d;
-    border-color: #555;
 }
 
 /* Small mobile devices */

@@ -193,9 +193,6 @@
                             <div class="setting-option">
                                 <button id="location-access-btn" class="feature-btn">Enable Precise Location</button>
                             </div>
-                            <div class="setting-option">
-                                <div id="location-container"></div>
-                            </div>
                         </div>
                     </div>
 
@@ -252,96 +249,8 @@
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
                 <h3>Generate Image from Text</h3>
-
-                <!-- Text prompt at the top -->
-                <div class="form-group">
-                    <label for="img-prompt">Describe the image you want to generate:</label>
-                    <textarea id="img-prompt" placeholder="Describe the image you want to generate..."></textarea>
-                </div>
-
-                <!-- Number of Images and File Type on the same row -->
-                <div class="form-row">
-                    <div class="form-group half-width">
-                        <label for="img-count">Number of Images:</label>
-                        <select id="img-count">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group half-width">
-                        <label for="img-format">File Type:</label>
-                        <select id="img-format">
-                            <option value="jpg">JPG</option>
-                            <option value="png" selected>PNG</option>
-                            <option value="jpeg">JPEG</option>
-                            <option value="gif">GIF</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Size and Style on the same row -->
-                <div class="form-row">
-                    <div class="form-group half-width">
-                        <label for="img-size">Size:</label>
-                        <select id="img-size" onchange="toggleCustomSize()">
-                            <option value="icon">Icon</option>
-                            <option value="square" selected>Square</option>
-                            <option value="16:9">16:9</option>
-                            <option value="9:16">9:16</option>
-                            <option value="custom">Custom</option>
-                        </select>
-
-                        <div id="custom-size-inputs" style="display: none; margin-top: 10px;">
-                            <div style="display: flex; gap: 10px;">
-                                <div>
-                                    <label for="img-width">Width:</label>
-                                    <input type="number" id="img-width" min="64" max="1024" value="512">
-                                </div>
-                                <div>
-                                    <label for="img-height">Height:</label>
-                                    <input type="number" id="img-height" min="64" max="1024" value="512">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group half-width">
-                        <label for="img-style">Style:</label>
-                        <select id="img-style">
-                            <option value="hd">HD</option>
-                            <option value="cartoon">Cartoon</option>
-                            <option value="realistic" selected>Realistic</option>
-                            <option value="artistic">Artistic</option>
-                            <option value="sketch">Sketch</option>
-                            <option value="painting">Painting</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Tile toggle centered -->
-                <div class="form-group text-center">
-                    <label for="img-tile-toggle">Tile:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="img-tile-toggle">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="setting-description">Creates a seamless tileable image</span>
-                </div>
-
-                <!-- Weirdness slider at the bottom -->
-                <div class="form-group">
-                    <label for="img-weirdness">Weirdness:</label>
-                    <div class="slider-container">
-                        <input type="range" min="0" max="1000" value="100" class="range-slider" id="img-weirdness">
-                        <input type="number" min="0" max="1000" value="100" id="img-weirdness-input">
-                    </div>
-                </div>
-
-                <button id="generate-img-btn" class="feature-btn">Generate</button>
+                <textarea id="img-prompt" placeholder="Describe the image you want to generate..."></textarea>
+                <button id="generate-img-btn">Generate</button>
                 <div id="img-result"></div>
             </div>
         </div>

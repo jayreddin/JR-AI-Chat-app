@@ -233,8 +233,6 @@ function initApp() {
         openUploadModal();
         // Set a flag to indicate we're doing OCR
         sessionStorage.setItem('upload-purpose', 'ocr');
-        // Set z-index higher than the AI features modal
-        document.getElementById('upload-modal').style.zIndex = '101';
     });
     document.getElementById('txt2speech-feature-btn').addEventListener('click', () => {
         // Get the last AI message
@@ -327,8 +325,6 @@ function initApp() {
 
     // Text to image generation
     generateImgBtn.addEventListener('click', generateImage);
-    document.getElementById('img-weirdness').addEventListener('input', updateWeirdness);
-    document.getElementById('img-weirdness-input').addEventListener('change', updateWeirdness);
 
     // Close modals when clicking outside
     window.addEventListener('click', (e) => {
@@ -996,21 +992,6 @@ function addUserMessage(message, attachments = []) {
     contentDiv.innerHTML = formatMessage(message);
     messageElement.appendChild(contentDiv);
 
-    // Add TTS button if TTS is active
-    if (isTtsActive) {
-        const ttsBtn = document.createElement('button');
-        ttsBtn.className = 'tts-message-btn';
-        ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        ttsBtn.title = 'Read this message';
-
-        ttsBtn.addEventListener('click', () => {
-            const messageText = messageElement.textContent;
-            speakText(messageText);
-        });
-
-        messageElement.appendChild(ttsBtn);
-    }
-
     // Add attachments if any
     if (attachments && attachments.length > 0) {
         const attachmentsDiv = document.createElement('div');
@@ -1233,28 +1214,6 @@ function addAIMessage(message) {
     // Add timestamp
     const timestamp = new Date().toISOString();
     addTimestampToMessage(messageElement, timestamp);
-
-    // Add TTS button if TTS is active
-    if (isTtsActive) {
-        const ttsBtn = document.createElement('button');
-        ttsBtn.className = 'tts-message-btn';
-        ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        ttsBtn.title = 'Read this message';
-
-        ttsBtn.addEventListener('click', () => {
-            const messageText = messageElement.textContent;
-            speakText(messageText);
-        });
-
-        messageElement.appendChild(ttsBtn);
-
-        // If TTS for AI responses is enabled, speak the message
-        if (ttsForAiResponses) {
-            setTimeout(() => {
-                speakText(message);
-            }, 500);
-        }
-    }
 
     chatHistory.appendChild(messageElement);
 
@@ -1528,253 +1487,64 @@ function openTxt2ImgModal() {
     txt2imgModal.style.display = 'block';
 }
 
-// Toggle custom size inputs
-function toggleCustomSize() {
-    const sizeSelect = document.getElementById('img-size');
-    const customInputs = document.getElementById('custom-size-inputs');
-
-    if (sizeSelect.value === 'custom') {
-        customInputs.style.display = 'block';
-    } else {
-        customInputs.style.display = 'none';
-    }
-}
-
-// Update weirdness value
-function updateWeirdness(e) {
-    const value = e.target.value;
-    const input = document.getElementById('img-weirdness-input');
-    const slider = document.getElementById('img-weirdness');
-
-    if (e.target.type === 'range') {
-        input.value = value;
-    } else {
-        slider.value = value;
-    }
-}
-
 async function generateImage() {
     const prompt = imgPrompt.value.trim();
     if (prompt === '' || isProcessing) return;
-
-    // Get all the settings
-    const count = parseInt(document.getElementById('img-count').value) || 1;
-    const sizeOption = document.getElementById('img-size').value;
-    const style = document.getElementById('img-style').value;
-    const format = document.getElementById('img-format').value;
-    const weirdness = parseInt(document.getElementById('img-weirdness').value) || 100;
-    const tile = document.getElementById('img-tile-toggle').checked;
-
-    // Get dimensions based on size option
-    let width = 512;
-    let height = 512;
-
-    if (sizeOption === 'icon') {
-        width = 64;
-        height = 64;
-    } else if (sizeOption === 'square') {
-        width = 512;
-        height = 512;
-    } else if (sizeOption === '16:9') {
-        width = 640;
-        height = 360;
-    } else if (sizeOption === '9:16') {
-        width = 360;
-        height = 640;
-    } else if (sizeOption === 'custom') {
-        width = parseInt(document.getElementById('img-width').value) || 512;
-        height = parseInt(document.getElementById('img-height').value) || 512;
-    }
-
-    // Log the settings
-    console.log('Image generation settings:', {
-        prompt,
-        count,
-        sizeOption,
-        width,
-        height,
-        style,
-        format,
-        weirdness,
-        tile
-    });
-
+    
     isProcessing = true;
     generateImgBtn.textContent = 'Generating...';
-
-    // Create placeholders for the images with progress bars
-    imgResult.innerHTML = '';
-    const placeholders = [];
-
-    for (let i = 0; i < count; i++) {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'generating-image-container';
-        placeholder.innerHTML = `
-            <div>Generating image ${i + 1} of ${count}...</div>
-            <div class="image-progress-bar" id="progress-${i}"></div>
-        `;
-        imgResult.appendChild(placeholder);
-        placeholders.push(placeholder);
-    }
-
+    imgResult.innerHTML = '<p>Creating your image, please wait...</p>';
+    
     try {
-        // In a real implementation, we would pass all these parameters to the API
-        // For now, we'll just use the basic API call and simulate multiple images
-        const images = [];
-
-        for (let i = 0; i < count; i++) {
-            // Start progress animation
-            simulateProgress(`progress-${i}`);
-
-            // Add a small delay between requests to avoid rate limiting
-            if (i > 0) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            // Call the API with the prompt
-            // In a real implementation, we would pass all the parameters
-            const image = await puter.ai.txt2img(prompt);
-            images.push(image);
-
-            // Update placeholder with the actual image
-            updatePlaceholderWithImage(placeholders[i], image, i, prompt, format);
-        }
+        const image = await puter.ai.txt2img(prompt);
+        
+        // Display the generated image
+        imgResult.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = image;
+        imgResult.appendChild(img);
+        
+        // Add a button to send to chat
+        const sendBtn = document.createElement('button');
+        sendBtn.textContent = 'Send to Chat';
+        sendBtn.style.marginTop = '10px';
+        sendBtn.onclick = () => {
+            addUserMessage(`I generated this image with the prompt: "${prompt}"`);
+            
+            const aiMessageElement = document.createElement('div');
+            aiMessageElement.className = 'message ai-message';
+            
+            const imgElement = document.createElement('img');
+            imgElement.src = image;
+            imgElement.style.maxWidth = '100%';
+            imgElement.style.borderRadius = '4px';
+            imgElement.style.marginTop = '10px';
+            
+            aiMessageElement.innerHTML = 'Here\'s the image I generated:';
+            aiMessageElement.appendChild(imgElement);
+            
+            // Add timestamp
+            addTimestampToMessage(aiMessageElement);
+            
+            chatHistory.appendChild(aiMessageElement);
+            scrollToBottom();
+            
+            closeModals();
+        };
+        imgResult.appendChild(sendBtn);
+        
     } catch (error) {
         imgResult.innerHTML = `<p>Error: ${error.message}</p>`;
         console.error('Image generation error:', error);
     }
-
+    
     generateImgBtn.textContent = 'Generate';
     isProcessing = false;
-}
-
-// Simulate progress for image generation
-function simulateProgress(progressBarId) {
-    const progressBar = document.getElementById(progressBarId);
-    if (!progressBar) return;
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 95) {
-            clearInterval(interval);
-        } else {
-            width += Math.random() * 5;
-            if (width > 95) width = 95;
-            progressBar.style.width = width + '%';
-        }
-    }, 200);
-
-    // Store the interval ID on the progress bar element
-    progressBar.dataset.intervalId = interval;
-}
-
-// Update placeholder with the actual image
-function updatePlaceholderWithImage(placeholder, image, index, prompt, format) {
-    // Clear any ongoing progress animation
-    const progressBar = placeholder.querySelector('.image-progress-bar');
-    if (progressBar && progressBar.dataset.intervalId) {
-        clearInterval(parseInt(progressBar.dataset.intervalId));
-    }
-
-    // Set progress to 100%
-    if (progressBar) {
-        progressBar.style.width = '100%';
-    }
-
-    // Replace placeholder content with the image
-    placeholder.innerHTML = '';
-    placeholder.className = 'generated-image-container';
-
-    const img = document.createElement('img');
-    img.src = image;
-    img.alt = `Generated image ${index + 1}`;
-    img.style.maxWidth = '100%';
-    img.style.borderRadius = '8px';
-    img.style.marginBottom = '10px';
-
-    const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'image-actions';
-
-    // Download button
-    const downloadBtn = document.createElement('button');
-    downloadBtn.className = 'feature-btn';
-    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
-    downloadBtn.onclick = () => {
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = `generated-image-${Date.now()}.${format}`;
-        link.click();
-    };
-
-    // Send to chat button
-    const sendBtn = document.createElement('button');
-    sendBtn.className = 'feature-btn';
-    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to Chat';
-    sendBtn.onclick = () => {
-        addUserMessage(`I generated this image with the prompt: "${prompt}"`);
-
-        const aiMessageElement = document.createElement('div');
-        aiMessageElement.className = 'message ai-message';
-
-        const imgElement = document.createElement('img');
-        imgElement.src = image;
-        imgElement.style.maxWidth = '100%';
-        imgElement.style.borderRadius = '4px';
-        imgElement.style.marginTop = '10px';
-
-        aiMessageElement.innerHTML = 'Here\'s the image I generated:';
-        aiMessageElement.appendChild(imgElement);
-
-        // Add timestamp
-        addTimestampToMessage(aiMessageElement);
-
-        chatHistory.appendChild(aiMessageElement);
-        scrollToBottom();
-
-        closeModals();
-    };
-
-    actionsDiv.appendChild(downloadBtn);
-    actionsDiv.appendChild(sendBtn);
-
-    placeholder.appendChild(img);
-    placeholder.appendChild(actionsDiv);
 }
 
 // Image to Text (OCR) functions
 function openUploadModal() {
     uploadModal.style.display = 'block';
-
-    // Check if we're doing OCR
-    if (sessionStorage.getItem('upload-purpose') === 'ocr') {
-        // Update the title
-        const modalTitle = uploadModal.querySelector('h3');
-        if (modalTitle) {
-            modalTitle.textContent = 'Extract Text from Image';
-        }
-
-        // Update the button text
-        if (processImageBtn) {
-            processImageBtn.textContent = 'Extract Text';
-        }
-
-        // Set z-index higher than the AI features modal
-        uploadModal.style.zIndex = '101';
-    } else {
-        // Reset to default
-        const modalTitle = uploadModal.querySelector('h3');
-        if (modalTitle) {
-            modalTitle.textContent = 'Upload Image';
-        }
-
-        // Reset button text
-        if (processImageBtn) {
-            processImageBtn.textContent = 'Process Image';
-        }
-
-        // Reset z-index
-        uploadModal.style.zIndex = '';
-    }
 }
 
 function previewImage(e) {
@@ -1794,132 +1564,25 @@ function previewImage(e) {
 async function processImage() {
     const file = imageUpload.files[0];
     if (!file || isProcessing) return;
-
+    
     isProcessing = true;
     processImageBtn.textContent = 'Processing...';
-
+    
     try {
-        // Check if we're doing OCR
-        const isOcr = sessionStorage.getItem('upload-purpose') === 'ocr';
-
-        // Read the file as a data URL
-        const fileReader = new FileReader();
-        const fileDataPromise = new Promise((resolve, reject) => {
-            fileReader.onload = () => resolve(fileReader.result);
-            fileReader.onerror = reject;
-            fileReader.readAsDataURL(file);
-        });
-
-        const fileData = await fileDataPromise;
-
-        // Call the Puter OCR API with the data URL
-        const extractedText = await puter.ai.img2txt(fileData);
-
+        const extractedText = await puter.ai.img2txt(file);
+        
         // Send to chat
         addUserMessage('I uploaded an image for text extraction');
-
-        if (isOcr) {
-            // Create AI message with extracted text box
-            const aiMessageElement = document.createElement('div');
-            aiMessageElement.className = 'message ai-message';
-
-            // Add message content
-            aiMessageElement.innerHTML = formatMessage("Text extracted from image:");
-
-            // Create text display box
-            const textBox = document.createElement('div');
-            textBox.className = 'extracted-text-box';
-
-            // Add header
-            const header = document.createElement('div');
-            header.className = 'extracted-text-header';
-            header.textContent = 'Extracted Text';
-
-            // Add text area
-            const textArea = document.createElement('textarea');
-            textArea.className = 'extracted-text-content';
-            textArea.value = extractedText;
-            textArea.readOnly = true;
-
-            // Add copy button
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'feature-btn';
-            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Text';
-            copyBtn.addEventListener('click', () => {
-                textArea.select();
-                document.execCommand('copy');
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Text';
-                }, 2000);
-            });
-
-            // Add elements to text box
-            textBox.appendChild(header);
-            textBox.appendChild(textArea);
-            textBox.appendChild(copyBtn);
-
-            // Add text box to message
-            aiMessageElement.appendChild(textBox);
-
-            // Add message action buttons
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'message-actions';
-
-            // Copy button
-            const msgCopyBtn = document.createElement('button');
-            msgCopyBtn.className = 'message-action-btn';
-            msgCopyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-            msgCopyBtn.title = 'Copy';
-            msgCopyBtn.onclick = () => copyMessageText(extractedText);
-
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'message-action-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.title = 'Delete';
-            deleteBtn.onclick = () => deleteMessage(aiMessageElement);
-
-            actionsDiv.appendChild(msgCopyBtn);
-            actionsDiv.appendChild(deleteBtn);
-            aiMessageElement.appendChild(actionsDiv);
-
-            // Add timestamp
-            const timestamp = new Date().toISOString();
-            addTimestampToMessage(aiMessageElement, timestamp);
-
-            // Add to chat
-            chatHistory.appendChild(aiMessageElement);
-            scrollToBottom();
-
-            // Save to conversation
-            if (currentConversationId) {
-                const conversation = conversations.find(c => c.id === currentConversationId);
-                if (conversation) {
-                    conversation.messages.push({
-                        role: 'assistant',
-                        content: `Text extracted from image: ${extractedText}`,
-                        timestamp: timestamp
-                    });
-                    saveConversations();
-                }
-            }
-
-            // Clear the session storage
-            sessionStorage.removeItem('upload-purpose');
-        } else {
-            // Regular OCR message
-            addAIMessage(`I extracted the following text from your image:\n\n${extractedText}`);
-        }
-
+        addAIMessage(`I extracted the following text from your image:\n\n${extractedText}`);
+        
         // Close modal
         closeModals();
-
+        
     } catch (error) {
         previewContainer.innerHTML += `<p>Error: ${error.message}</p>`;
         console.error('OCR error:', error);
     }
-
+    
     processImageBtn.textContent = 'Process Image';
     isProcessing = false;
 }
@@ -5028,17 +4691,15 @@ function clearTerminal() {
 
 function requestLocationAccess() {
     const locationBtn = document.getElementById('location-access-btn');
-    const locationContainer = document.getElementById('location-container');
-
-    // Clear the container
-    if (locationContainer) {
-        locationContainer.innerHTML = '';
-    }
-
-    // Create location box
     const locationBox = document.createElement('div');
     locationBox.id = 'location-box';
     locationBox.className = 'location-box';
+
+    // Remove existing box if any
+    const existingBox = document.getElementById('location-box');
+    if (existingBox) {
+        existingBox.remove();
+    }
 
     if (navigator.geolocation) {
         locationBtn.disabled = true;
@@ -5072,8 +4733,8 @@ function requestLocationAccess() {
                 locationBox.appendChild(coordsText);
                 locationBox.appendChild(mapBtn);
 
-                // Add location box to container
-                locationContainer.appendChild(locationBox);
+                // Add location box to DOM
+                locationBtn.parentNode.appendChild(locationBox);
 
                 console.log(`Location access granted! Latitude: ${lat}, Longitude: ${lng}`);
             },
@@ -5088,8 +4749,8 @@ function requestLocationAccess() {
                 errorText.textContent = `Error: ${error.message}`;
                 locationBox.appendChild(errorText);
 
-                // Add location box to container
-                locationContainer.appendChild(locationBox);
+                // Add location box to DOM
+                locationBtn.parentNode.appendChild(locationBox);
 
                 localStorage.setItem('location-access', 'false');
                 console.error(`Error getting location: ${error.message}`);
@@ -5101,8 +4762,8 @@ function requestLocationAccess() {
         errorText.textContent = 'Geolocation is not supported by this browser.';
         locationBox.appendChild(errorText);
 
-        // Add location box to container
-        locationContainer.appendChild(locationBox);
+        // Add location box to DOM
+        locationBtn.parentNode.appendChild(locationBox);
 
         console.error('Geolocation is not supported by this browser.');
     }
@@ -5199,9 +4860,7 @@ function toggleCompactMode(e) {
 // Restore location coordinates if available
 function restoreLocationCoordinates() {
     const locationBtn = document.getElementById('location-access-btn');
-    const locationContainer = document.getElementById('location-container');
-
-    if (!locationBtn || !locationContainer) return;
+    if (!locationBtn) return;
 
     // Check if location access was granted
     const locationAccess = localStorage.getItem('location-access') === 'true';
@@ -5231,8 +4890,8 @@ function restoreLocationCoordinates() {
             locationBox.appendChild(coordsText);
             locationBox.appendChild(mapBtn);
 
-            // Add to container
-            locationContainer.appendChild(locationBox);
+            // Add to DOM
+            locationBtn.parentNode.appendChild(locationBox);
 
             console.log(`Restored location coordinates: ${coords.lat}, ${coords.lng}`);
         } catch (error) {
@@ -5326,69 +4985,70 @@ let ttsForAiResponses = false;
 
 // Text to speech function
 function textToSpeech(text) {
-    // Close the AI Features modal
-    closeAiFeaturesModal();
+    if (!text) {
+        // Ask user to type a message
+        addAIMessage("Please type a message that you'd like me to read aloud.");
 
-    // Add TTS buttons to all messages
-    addTtsButtonsToMessages();
+        // Set flag to activate TTS for next user message
+        isTtsActive = true;
 
-    // Set flag to activate TTS for new messages
-    isTtsActive = true;
+        // Add TTS indicator to the UI
+        addTtsIndicator();
 
-    // Add TTS indicator to the UI
-    addTtsIndicator();
-
-    // If text is provided, speak it
-    if (text) {
-        speakText(text);
+        // Close the modal
+        closeAiFeaturesModal();
+        return;
     }
-}
 
-// Add TTS buttons to all messages
-function addTtsButtonsToMessages() {
-    const messages = document.querySelectorAll('.message');
+    // Show loading state
+    addAIMessage("Converting text to speech...");
 
-    messages.forEach(message => {
-        // Skip if already has a TTS button
-        if (message.querySelector('.tts-message-btn')) {
-            return;
+    // In a real implementation, you would call a text-to-speech API here
+    // For now, we'll simulate a response
+    setTimeout(() => {
+        const aiMessages = document.querySelectorAll('.ai-message');
+        const lastAiMessage = aiMessages[aiMessages.length - 1];
+
+        // Create audio element (in a real implementation, this would have a real audio source)
+        const audioElement = document.createElement('audio');
+        audioElement.controls = true;
+        audioElement.src = 'data:audio/mp3;base64,AAAAAAAA'; // Placeholder
+
+        // Create TTS controls
+        const ttsControls = document.createElement('div');
+        ttsControls.className = 'tts-controls';
+
+        const readAiResponsesLabel = document.createElement('label');
+        readAiResponsesLabel.innerHTML = `
+            <input type="checkbox" id="tts-ai-responses" ${ttsForAiResponses ? 'checked' : ''}>
+            Also read AI responses
+        `;
+
+        const stopTtsBtn = document.createElement('button');
+        stopTtsBtn.className = 'feature-btn';
+        stopTtsBtn.innerHTML = '<i class="fas fa-stop"></i> Stop TTS';
+        stopTtsBtn.addEventListener('click', stopTextToSpeech);
+
+        ttsControls.appendChild(readAiResponsesLabel);
+        ttsControls.appendChild(stopTtsBtn);
+
+        // Update message
+        lastAiMessage.innerHTML = formatMessage("Text converted to speech:");
+        lastAiMessage.appendChild(audioElement);
+        lastAiMessage.appendChild(ttsControls);
+
+        // Set up event listener for the checkbox
+        const aiResponsesCheckbox = document.getElementById('tts-ai-responses');
+        if (aiResponsesCheckbox) {
+            aiResponsesCheckbox.addEventListener('change', (e) => {
+                ttsForAiResponses = e.target.checked;
+                localStorage.setItem('tts-for-ai-responses', ttsForAiResponses);
+            });
         }
 
-        // Create TTS button
-        const ttsBtn = document.createElement('button');
-        ttsBtn.className = 'tts-message-btn';
-        ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        ttsBtn.title = 'Read this message';
-
-        // Add click event
-        ttsBtn.addEventListener('click', () => {
-            const messageText = message.textContent;
-            speakText(messageText);
-        });
-
-        // Add to message
-        message.appendChild(ttsBtn);
-    });
-}
-
-// Speak text using the Web Speech API
-function speakText(text) {
-    // Cancel any ongoing speech
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
-
-    // Create a new speech synthesis utterance
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    // Set language to English
-    utterance.lang = 'en-US';
-
-    // Speak the text
-    window.speechSynthesis.speak(utterance);
-
-    // Log to terminal
-    logToTerminal(`Speaking text: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+        // Close the modal
+        closeAiFeaturesModal();
+    }, 2000);
 }
 
 // Add TTS indicator to the UI
@@ -5423,11 +5083,6 @@ function stopTextToSpeech() {
     isTtsActive = false;
     ttsForAiResponses = false;
 
-    // Cancel any ongoing speech
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
-
     // Remove TTS indicator
     const indicator = document.getElementById('tts-indicator');
     if (indicator) {
@@ -5436,9 +5091,6 @@ function stopTextToSpeech() {
 
     // Add message
     addAIMessage("Text-to-speech has been deactivated.");
-
-    // Log to terminal
-    logToTerminal("Text-to-speech deactivated");
 }
 
 // Agent functions
