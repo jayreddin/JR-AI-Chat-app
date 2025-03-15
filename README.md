@@ -43,30 +43,13 @@ Here’s a brief overview of the project structure:
 
 ```
 JR-AI-Chat-app/
-├── public/
-│   ├── index.html
-│   ├── styles/
-│   │   ├── main.css
-│   │   └── theme.css
-├── src/
-│   ├── components/
-│   │   ├── ChatWindow.js
-│   │   ├── Message.js
-│   │   └── UserList.js
-│   ├── pages/
-│   │   ├── Home.js
-│   │   ├── Login.js
-│   │   └── Register.js
-│   ├── services/
-│   │   ├── authService.js
-│   │   ├── chatService.js
-│   │   └── api.js
-│   ├── App.js
-│   └── index.js
-├── .gitignore
-├── package.json
-├── LICENSE
-└── README.md
+├── .vscode/
+│   └── settings.json
+├── APPDOCS/
+│   └── PuterAPIDocs.md
+├── app.js
+├── index.html
+└── styles.css
 ```
 
 ## Contributing
