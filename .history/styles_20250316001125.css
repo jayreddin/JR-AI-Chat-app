@@ -70,7 +70,7 @@ header {
 
 .model-selector-container {
     flex: 1;
-    min-width: 80px;
+    min-width: 120px;
     max-width: 400px;
     margin: 0 20px;
     position: sticky;
@@ -225,7 +225,7 @@ main {
 }
 
 .utility-bar .icon-btn {
-    background-color: transparent;
+    background-color: #f8f9fa;
 }
 
 .icon-btn i {

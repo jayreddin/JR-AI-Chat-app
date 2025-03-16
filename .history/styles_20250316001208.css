@@ -81,7 +81,7 @@ header {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 80px;
     background-color: #f8f9fa;
     font-size: 22px;
     font-weight: bold;
@@ -225,7 +225,7 @@ main {
 }
 
 .utility-bar .icon-btn {
-    background-color: transparent;
+    background-color: #f8f9fa;
 }
 
 .icon-btn i {
