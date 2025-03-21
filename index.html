@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JR AI Chat</title>
     <script src="https://js.puter.com/v2/"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -10,52 +10,42 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <!-- CodeMirror for code editor -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
-    <!-- Leaflet for maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="app-container">
         <header>
-            <div class="header-flex-container">
-                <div class="logo-container">
-                    <div class="stacked-logo">
-                        <div class="logo-top">JR AI</div>
-                        <div class="logo-bottom">Chat</div>
-                    </div>
-                </div>
-                <div class="model-selector-container">
-                    <select id="model-selector">
-                        <option value="gpt-4o-mini" selected>GPT-4o Mini (Default)</option>
-                        <option value="gpt-4o">GPT-4o</option>
-                        <option value="o3-mini">O3 Mini</option>
-                        <option value="claude-3-7-sonnet">Claude 3.7 Sonnet</option>
-                        <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
-                        <option value="deepseek-chat">DeepSeek Chat</option>
-                        <option value="deepseek-reasoner">DeepSeek Reasoner</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                        <option value="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo">Meta Llama 3.1 8B</option>
-                        <option value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo">Meta Llama 3.1 70B</option>
-                        <option value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo">Meta Llama 3.1 405B</option>
-                        <option value="mistral-large-latest">Mistral Large</option>
-                        <option value="pixtral-large-latest">Pixtral Large</option>
-                        <option value="codestral-latest">Codestral</option>
-                        <option value="google/gemma-2-27b-it">Gemma 2 27B</option>
-                        <option value="grok-beta">Grok Beta</option>
-                    </select>
-                </div>
-                <div class="header-controls">
-                    <div id="env-indicator" title="Puter Environment">
-                        <i class="fas fa-server"></i>
-                        <span id="env-type"></span>
+            <div class="logo-container">
+                <h1><span>JR</span><br>AI Chat</h1>
+            </div>
+            <div class="model-selector-container">
+                <select id="model-selector">
+                    <option value="gpt-4o-mini" selected>GPT-4o Mini (Default)</option>
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="o3-mini">O3 Mini</option>
+                    <option value="claude-3-7-sonnet">Claude 3.7 Sonnet</option>
+                    <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+                    <option value="deepseek-chat">DeepSeek Chat</option>
+                    <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo">Meta Llama 3.1 8B</option>
+                    <option value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo">Meta Llama 3.1 70B</option>
+                    <option value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo">Meta Llama 3.1 405B</option>
+                    <option value="mistral-large-latest">Mistral Large</option>
+                    <option value="pixtral-large-latest">Pixtral Large</option>
+                    <option value="codestral-latest">Codestral</option>
+                    <option value="google/gemma-2-27b-it">Gemma 2 27B</option>
+                    <option value="grok-beta">Grok Beta</option>
+                </select>
+            </div>
+            <div class="header-controls">
+                <div id="auth-section">
+                    <button id="login-btn" class="small-btn">Login</button>
+                    <div id="user-info" style="display: none;">
+                        <div class="username-container">
+                            <span id="username"></span>
+                        </div>
+                        <button id="logout-btn" class="small-btn">Logout</button>
                     </div>
                 </div>
             </div>
@@ -86,30 +76,28 @@
 
                 <!-- Utility Bar -->
                 <div class="utility-bar">
-                    <button id="new-chat-btn" class="icon-btn" title="New Chat"><i class="fas fa-plus"></i></button>
-                    <button id="chat-history-btn" class="icon-btn" title="Chat History"><i class="fas fa-history"></i></button>
-                    <button id="image-upload-btn" class="icon-btn" title="Image Upload"><i class="fas fa-image"></i></button>
-                    <button id="file-upload-btn" class="icon-btn" title="File Upload"><i class="fas fa-file"></i></button>
-                    <button id="code-editor-btn" class="icon-btn" title="Code Editor"><i class="fas fa-code"></i></button>
-                    <button id="knowledge-base-btn" class="icon-btn" title="Knowledge Base"><i class="fas fa-archive"></i></button>
-                    <button id="reasoning-btn" class="icon-btn" title="Reasoning"><i class="fas fa-brain"></i></button>
-                    <button id="web-url-btn" class="icon-btn" title="Web URL"><i class="fas fa-globe"></i></button>
-                    <button id="tools-btn" class="icon-btn" title="Tools"><i class="fas fa-tools"></i></button>
-                    <button id="mcp-btn" class="icon-btn" title="MCP"><i class="fas fa-server"></i></button>
-                    <button id="ai-features-btn" class="icon-btn" title="AI Features"><i class="fas fa-robot"></i></button>
-                    <button id="settings-btn" class="icon-btn" title="Settings"><i class="fas fa-cog"></i></button>
+                    <button id="new-chat-btn" class="icon-btn" data-tooltip="New Chat"><i class="fas fa-plus"></i></button>
+                    <button id="chat-history-btn" class="icon-btn" data-tooltip="Chat History"><i class="fas fa-history"></i></button>
+                    <button id="image-upload-btn" class="icon-btn" data-tooltip="Image Upload"><i class="fas fa-image"></i></button>
+                    <button id="file-upload-btn" class="icon-btn" data-tooltip="File Upload"><i class="fas fa-file"></i></button>
+                    <button id="knowledge-base-btn" class="icon-btn" data-tooltip="Knowledge Base"><i class="fas fa-archive"></i></button>
+                    <button id="reasoning-btn" class="icon-btn" data-tooltip="Reasoning"><i class="fas fa-brain"></i></button>
+                    <button id="web-url-btn" class="icon-btn" data-tooltip="Web URL"><i class="fas fa-globe"></i></button>
+                    <button id="tools-btn" class="icon-btn" data-tooltip="Tools"><i class="fas fa-tools"></i></button>
+                    <button id="mcp-btn" class="icon-btn" data-tooltip="MCP Servers"><i class="fas fa-server"></i></button>
+                    <button id="ai-features-btn" class="icon-btn" data-tooltip="AI Features"><i class="fas fa-robot"></i></button>
+                    <button id="settings-btn" class="icon-btn" data-tooltip="Settings"><i class="fas fa-cog"></i></button>
                 </div>
 
                 <div class="input-container">
                     <div class="message-input-area">
                         <div class="input-with-resize">
-                            <div class="resize-handle" id="resize-handle" title="Drag to resize"></div>
                             <textarea id="message-input" placeholder="Type your message here..."></textarea>
+                            <div class="resize-handle" id="resize-handle" title="Drag to resize"></div>
                         </div>
                         <div class="input-buttons">
                             <button id="mic-btn" class="icon-btn" title="Voice Input"><i class="fas fa-microphone"></i></button>
                             <button id="send-btn">Send</button>
-                            <button id="tts-btn" class="icon-btn" title="Text to Speech" style="display: none;"><i class="fas fa-volume-up"></i></button>
                         </div>
                     </div>
                 </div>
@@ -136,31 +124,12 @@
                     <div class="tab-content active" id="general-tab">
                         <div class="feature-section">
                             <h4>Appearance</h4>
-                            <div class="setting-options-row">
-                                <div class="setting-option">
-                                    <label for="dark-mode-toggle">Dark Mode:</label>
-                                    <label class="switch">
-                                        <input type="checkbox" id="dark-mode-toggle">
-                                        <span class="slider round"></span>
-                                    </label>
-                                </div>
-
-                                <div class="setting-option">
-                                    <label for="terminal-calls-toggle">Terminal Calls:</label>
-                                    <label class="switch">
-                                        <input type="checkbox" id="terminal-calls-toggle">
-                                        <span class="slider round"></span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="setting-options-row">
-                                <div class="setting-option">
-                                    <button id="compact-mode-btn" class="feature-btn">Compact Mode</button>
-                                </div>
-                                <div class="setting-option">
-                                    <button id="memory-mode-btn" class="feature-btn">Memory</button>
-                                </div>
+                            <div class="setting-option">
+                                <label for="dark-mode-toggle">Dark Mode:</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="dark-mode-toggle">
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
 
                             <div class="setting-option">
@@ -171,56 +140,61 @@
                                     <span>%</span>
                                 </div>
                             </div>
+
+                            <div class="setting-option">
+                                <label for="compact-mode">Compact Mode:</label>
+                                <input type="checkbox" id="compact-mode">
+                            </div>
+
+                            <div class="setting-option">
+                                <label for="terminal-calls-toggle">Terminal Calls:</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="terminal-calls-toggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="feature-section">
                             <h4>Units</h4>
-                            <div class="setting-options-row">
-                                <div class="setting-option">
-                                    <label>Temperature:</label>
-                                    <select id="temp-unit">
-                                        <option value="C" selected>Celsius</option>
-                                        <option value="F">Fahrenheit</option>
-                                    </select>
-                                </div>
-
-                                <div class="setting-option">
-                                    <label>Distance:</label>
-                                    <select id="distance-unit">
-                                        <option value="km" selected>Kilometers</option>
-                                        <option value="mi">Miles</option>
-                                    </select>
+                            <div class="setting-option">
+                                <label>Temperature:</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="temp-unit" value="C" checked> Celsius</label>
+                                    <label><input type="radio" name="temp-unit" value="F"> Fahrenheit</label>
                                 </div>
                             </div>
 
-                            <div class="setting-options-row">
-                                <div class="setting-option">
-                                    <label for="date-format">Date Format:</label>
-                                    <select id="date-format">
-                                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                                    </select>
+                            <div class="setting-option">
+                                <label>Distance:</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="distance-unit" value="km" checked> Kilometers</label>
+                                    <label><input type="radio" name="distance-unit" value="mi"> Miles</label>
                                 </div>
+                            </div>
 
-                                <div class="setting-option">
-                                    <label for="time-format">Time Format:</label>
-                                    <select id="time-format">
-                                        <option value="12h">12-hour (AM/PM)</option>
-                                        <option value="24h">24-hour</option>
-                                    </select>
-                                </div>
+                            <div class="setting-option">
+                                <label for="date-format">Date Format:</label>
+                                <select id="date-format">
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-option">
+                                <label for="time-format">Time Format:</label>
+                                <select id="time-format">
+                                    <option value="12h">12-hour (AM/PM)</option>
+                                    <option value="24h">24-hour</option>
+                                </select>
                             </div>
 
                             <div class="setting-option">
                                 <button id="location-access-btn" class="feature-btn">Enable Precise Location</button>
                             </div>
-                            
-                            <div id="location-display" style="display: none;">
-                                <div class="location-box">
-                                    <div class="location-coordinates" id="location-coords"></div>
-                                    <div id="location-map" style="height: 200px; width: 100%;"></div>
-                                </div>
+                            <div class="setting-option">
+                                <div id="location-container"></div>
                             </div>
                         </div>
                     </div>
@@ -278,52 +252,96 @@
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
                 <h3>Generate Image from Text</h3>
-                <textarea id="img-prompt" placeholder="Describe the image you want to generate..."></textarea>
-                
+
+                <!-- Text prompt at the top -->
+                <div class="form-group">
+                    <label for="img-prompt">Describe the image you want to generate:</label>
+                    <textarea id="img-prompt" placeholder="Describe the image you want to generate..."></textarea>
+                </div>
+
+                <!-- Number of Images and File Type on the same row -->
                 <div class="form-row">
-                    <div class="half-width">
-                        <label for="img-size">Image Size:</label>
-                        <select id="img-size">
-                            <option value="512x512">512x512</option>
-                            <option value="768x768" selected>768x768</option>
-                            <option value="1024x1024">1024x1024</option>
-                            <option value="1024x1792">1024x1792 (Portrait)</option>
-                            <option value="1792x1024">1792x1024 (Landscape)</option>
-                        </select>
-                    </div>
-                    <div class="half-width">
+                    <div class="form-group half-width">
                         <label for="img-count">Number of Images:</label>
                         <select id="img-count">
-                            <option value="1" selected>1</option>
+                            <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label for="img-format">File Type:</label>
+                        <select id="img-format">
+                            <option value="jpg">JPG</option>
+                            <option value="png" selected>PNG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="gif">GIF</option>
                         </select>
                     </div>
                 </div>
-                
+
+                <!-- Size and Style on the same row -->
                 <div class="form-row">
-                    <div class="half-width">
+                    <div class="form-group half-width">
+                        <label for="img-size">Size:</label>
+                        <select id="img-size" onchange="toggleCustomSize()">
+                            <option value="icon">Icon</option>
+                            <option value="square" selected>Square</option>
+                            <option value="16:9">16:9</option>
+                            <option value="9:16">9:16</option>
+                            <option value="custom">Custom</option>
+                        </select>
+
+                        <div id="custom-size-inputs" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; gap: 10px;">
+                                <div>
+                                    <label for="img-width">Width:</label>
+                                    <input type="number" id="img-width" min="64" max="1024" value="512">
+                                </div>
+                                <div>
+                                    <label for="img-height">Height:</label>
+                                    <input type="number" id="img-height" min="64" max="1024" value="512">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group half-width">
                         <label for="img-style">Style:</label>
                         <select id="img-style">
-                            <option value="natural" selected>Natural</option>
-                            <option value="vivid">Vivid</option>
-                            <option value="cinematic">Cinematic</option>
-                            <option value="anime">Anime</option>
-                            <option value="digital-art">Digital Art</option>
-                            <option value="photographic">Photographic</option>
-                        </select>
-                    </div>
-                    <div class="half-width">
-                        <label for="img-quality">Quality:</label>
-                        <select id="img-quality">
-                            <option value="standard">Standard</option>
-                            <option value="hd" selected>HD</option>
+                            <option value="hd">HD</option>
+                            <option value="cartoon">Cartoon</option>
+                            <option value="realistic" selected>Realistic</option>
+                            <option value="artistic">Artistic</option>
+                            <option value="sketch">Sketch</option>
+                            <option value="painting">Painting</option>
                         </select>
                     </div>
                 </div>
-                
-                <button id="generate-img-btn">Generate</button>
+
+                <!-- Tile toggle centered -->
+                <div class="form-group text-center">
+                    <label for="img-tile-toggle">Tile:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="img-tile-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="setting-description">Creates a seamless tileable image</span>
+                </div>
+
+                <!-- Weirdness slider at the bottom -->
+                <div class="form-group">
+                    <label for="img-weirdness">Weirdness:</label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="1000" value="100" class="range-slider" id="img-weirdness">
+                        <input type="number" min="0" max="1000" value="100" id="img-weirdness-input">
+                    </div>
+                </div>
+
+                <button id="generate-img-btn" class="feature-btn">Generate</button>
                 <div id="img-result"></div>
             </div>
         </div>
@@ -565,8 +583,8 @@
                 <h3>Web URL</h3>
                 <div class="url-input-container">
                     <input type="url" id="web-url-input" placeholder="Enter URL to analyze">
+                    <button id="load-url-btn" class="feature-btn">Load</button>
                 </div>
-                <button id="load-url-btn" class="feature-btn">Load</button>
 
                 <div id="url-preview-container" style="display: none;">
                     <div class="url-preview">
@@ -577,35 +595,12 @@
                     <div class="url-actions">
                         <button id="scrape-url-btn" class="feature-btn">Scrape Webpage</button>
                         <button id="add-url-to-chat-btn" class="feature-btn">Add to Chat</button>
-                        <button id="extract-data-btn" class="feature-btn">Extract Data</button>
+                        <button id="download-url-text-btn" class="feature-btn">Download Text</button>
                     </div>
                 </div>
 
-                <div id="extract-options" class="extract-options" style="display: none;">
-                    <button class="extract-option" data-type="text">Text</button>
-                    <button class="extract-option" data-type="images">Images</button>
-                    <button class="extract-option" data-type="code">Page Code</button>
-                </div>
-
-                <div id="extracted-data-container" style="display: none;">
-                    <div class="extracted-text-box">
-                        <div class="extracted-text-header">
-                            <span id="extracted-data-type">Extracted Text</span>
-                            <button id="copy-extracted-data" class="small-btn"><i class="fas fa-copy"></i> Copy</button>
-                        </div>
-                        <div id="extracted-text-content" class="extracted-text-content"></div>
-                    </div>
-                    <div id="extracted-images-container" class="extracted-images-container" style="display: none;">
-                        <div class="image-navigation">
-                            <button id="prev-image" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
-                            <span id="image-counter">1 / 1</span>
-                            <button id="next-image" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
-                        </div>
-                        <div class="image-display">
-                            <img id="current-extracted-image" src="" alt="Extracted image">
-                        </div>
-                        <button id="download-image" class="feature-btn"><i class="fas fa-download"></i> Download</button>
-                    </div>
+                <div class="modal-buttons">
+                    <button id="save-web-url-btn">Close</button>
                 </div>
             </div>
         </div>
@@ -617,107 +612,30 @@
                 <h3>Tools</h3>
                 <div class="tools-search">
                     <input type="text" id="tools-search-input" placeholder="Search for tools...">
-                    <div class="search-sources">
-                        <label><input type="checkbox" class="search-source" value="github" checked> GitHub</label>
-                        <label><input type="checkbox" class="search-source" value="reddit" checked> Reddit</label>
-                        <label><input type="checkbox" class="search-source" value="google" checked> Google</label>
-                    </div>
-                    <button id="search-tools-btn" class="feature-btn">Search</button>
                 </div>
 
                 <div class="tools-container">
                     <div class="tools-list">
                         <div class="tool-item">
-                            <div class="tool-header">
-                                <input type="checkbox" id="tool-weather" checked>
-                                <label for="tool-weather">Weather</label>
-                                <button class="tool-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                            </div>
+                            <input type="checkbox" id="tool-weather" checked>
+                            <label for="tool-weather">Weather</label>
                             <span class="tool-description">Get current weather for any location</span>
-                            <div class="tool-details" style="display: none;">
-                                <div class="tool-usage">
-                                    <h4>Usage:</h4>
-                                    <p>Get weather information for any location by asking about the weather.</p>
-                                    <h4>Examples:</h4>
-                                    <ul>
-                                        <li>What's the weather like in New York?</li>
-                                        <li>Will it rain in London tomorrow?</li>
-                                    </ul>
-                                    <h4>Call:</h4>
-                                    <code>@weather [location]</code>
-                                </div>
-                            </div>
                         </div>
                         <div class="tool-item">
-                            <div class="tool-header">
-                                <input type="checkbox" id="tool-calculator">
-                                <label for="tool-calculator">Calculator</label>
-                                <button class="tool-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                            </div>
+                            <input type="checkbox" id="tool-calculator">
+                            <label for="tool-calculator">Calculator</label>
                             <span class="tool-description">Perform complex calculations</span>
-                            <div class="tool-details" style="display: none;">
-                                <div class="tool-usage">
-                                    <h4>Usage:</h4>
-                                    <p>Perform mathematical calculations with precision.</p>
-                                    <h4>Examples:</h4>
-                                    <ul>
-                                        <li>Calculate 15% of 67.89</li>
-                                        <li>What is the square root of 144?</li>
-                                    </ul>
-                                    <h4>Call:</h4>
-                                    <code>@calc [expression]</code>
-                                </div>
-                            </div>
                         </div>
                         <div class="tool-item">
-                            <div class="tool-header">
-                                <input type="checkbox" id="tool-search">
-                                <label for="tool-search">Web Search</label>
-                                <button class="tool-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                            </div>
+                            <input type="checkbox" id="tool-search">
+                            <label for="tool-search">Web Search</label>
                             <span class="tool-description">Search the web for information</span>
-                            <div class="tool-details" style="display: none;">
-                                <div class="tool-usage">
-                                    <h4>Usage:</h4>
-                                    <p>Search the web for up-to-date information.</p>
-                                    <h4>Examples:</h4>
-                                    <ul>
-                                        <li>Search for latest news about AI</li>
-                                        <li>Find information about climate change</li>
-                                    </ul>
-                                    <h4>Call:</h4>
-                                    <code>@search [query]</code>
-                                </div>
-                            </div>
                         </div>
                         <div class="tool-item">
-                            <div class="tool-header">
-                                <input type="checkbox" id="tool-calendar">
-                                <label for="tool-calendar">Calendar</label>
-                                <button class="tool-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                            </div>
+                            <input type="checkbox" id="tool-calendar">
+                            <label for="tool-calendar">Calendar</label>
                             <span class="tool-description">Manage calendar events</span>
-                            <div class="tool-details" style="display: none;">
-                                <div class="tool-usage">
-                                    <h4>Usage:</h4>
-                                    <p>Create, view, and manage calendar events.</p>
-                                    <h4>Examples:</h4>
-                                    <ul>
-                                        <li>Schedule a meeting for tomorrow at 2pm</li>
-                                        <li>What events do I have next week?</li>
-                                    </ul>
-                                    <h4>Call:</h4>
-                                    <code>@calendar [action] [details]</code>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div id="search-results-container" style="display: none;">
-                    <h4>Search Results</h4>
-                    <div id="tools-search-results" class="tools-search-results">
-                        <!-- Search results will be populated here -->
                     </div>
                 </div>
 
@@ -746,18 +664,11 @@
                 <div class="mcp-tab-content active" id="search-tab">
                     <div class="mcp-search">
                         <input type="text" id="mcp-search-input" placeholder="Search for MCP servers...">
-                        <div class="search-sources">
-                            <label><input type="checkbox" class="mcp-search-source" value="github" checked> GitHub</label>
-                            <label><input type="checkbox" class="mcp-search-source" value="mcp.so" checked> MCP.so</label>
-                            <label><input type="checkbox" class="mcp-search-source" value="reddit" checked> Reddit</label>
-                            <label><input type="checkbox" class="mcp-search-source" value="google" checked> Google</label>
-                        </div>
-                        <button id="search-mcp-btn" class="feature-btn">Search</button>
                     </div>
 
                     <div class="mcp-container">
                         <div class="mcp-list" id="mcp-search-results">
-                            <div class="mcp-loading">Search for available MCP servers...</div>
+                            <div class="mcp-loading">Searching for available MCP servers...</div>
                         </div>
                     </div>
                 </div>
@@ -779,24 +690,6 @@
                                     </label>
                                     <button class="mcp-delete-btn"><i class="fas fa-trash"></i></button>
                                 </div>
-                                <button class="mcp-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                                <div class="mcp-details" style="display: none;">
-                                    <div class="mcp-functions">
-                                        <h4>Available Functions:</h4>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">processText</div>
-                                            <div class="mcp-function-description">Process and analyze text data locally</div>
-                                        </div>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">analyzeImage</div>
-                                            <div class="mcp-function-description">Analyze image content locally</div>
-                                        </div>
-                                    </div>
-                                    <div class="mcp-usage">
-                                        <h4>Usage:</h4>
-                                        <code>@local [function] [parameters]</code>
-                                    </div>
-                                </div>
                             </div>
                             <div class="mcp-item">
                                 <div class="mcp-status-indicator orange"></div>
@@ -811,24 +704,6 @@
                                     </label>
                                     <button class="mcp-delete-btn"><i class="fas fa-trash"></i></button>
                                 </div>
-                                <button class="mcp-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                                <div class="mcp-details" style="display: none;">
-                                    <div class="mcp-functions">
-                                        <h4>Available Functions:</h4>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">processData</div>
-                                            <div class="mcp-function-description">Process large datasets in the cloud</div>
-                                        </div>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">generateReport</div>
-                                            <div class="mcp-function-description">Generate comprehensive reports</div>
-                                        </div>
-                                    </div>
-                                    <div class="mcp-usage">
-                                        <h4>Usage:</h4>
-                                        <code>@cloud [function] [parameters]</code>
-                                    </div>
-                                </div>
                             </div>
                             <div class="mcp-item">
                                 <div class="mcp-status-indicator red"></div>
@@ -842,24 +717,6 @@
                                         <span class="slider round"></span>
                                     </label>
                                     <button class="mcp-delete-btn"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <button class="mcp-expand-btn"><i class="fas fa-chevron-down"></i></button>
-                                <div class="mcp-details" style="display: none;">
-                                    <div class="mcp-functions">
-                                        <h4>Available Functions:</h4>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">smartProcess</div>
-                                            <div class="mcp-function-description">Intelligently choose between local and cloud processing</div>
-                                        </div>
-                                        <div class="mcp-function-item">
-                                            <div class="mcp-function-name">distributedCompute</div>
-                                            <div class="mcp-function-description">Distribute computation across local and cloud resources</div>
-                                        </div>
-                                    </div>
-                                    <div class="mcp-usage">
-                                        <h4>Usage:</h4>
-                                        <code>@hybrid [function] [parameters]</code>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -908,23 +765,6 @@
 
                 <!-- Agents Tab -->
                 <div class="tab-content" id="agents-tab">
-                    <div class="agents-search">
-                        <input type="text" id="agents-search-input" placeholder="Search for agents...">
-                        <div class="search-sources">
-                            <label><input type="checkbox" class="agent-search-source" value="github" checked> GitHub</label>
-                            <label><input type="checkbox" class="agent-search-source" value="reddit" checked> Reddit</label>
-                            <label><input type="checkbox" class="agent-search-source" value="google" checked> Google</label>
-                        </div>
-                        <button id="search-agents-btn" class="feature-btn">Search</button>
-                    </div>
-                    
-                    <div id="agents-search-results" style="display: none;">
-                        <h4>Search Results</h4>
-                        <div class="agents-search-results-list">
-                            <!-- Search results will be populated here -->
-                        </div>
-                    </div>
-                    
                     <div class="agents-container">
                         <div class="agents-list">
                             <div class="agent-item">
@@ -936,7 +776,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -948,7 +787,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -960,7 +798,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -972,7 +809,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -984,7 +820,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -996,7 +831,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1008,7 +842,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1020,7 +853,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1032,7 +864,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1044,7 +875,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1056,7 +886,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1068,7 +897,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
 
                             <div class="agent-item">
@@ -1080,7 +908,6 @@
                                     <input type="checkbox" checked>
                                     <span class="slider round"></span>
                                 </label>
-                                <button class="agent-delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
 
@@ -1128,68 +955,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Code Editor Modal -->
-        <div id="code-editor-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h3>Code Editor</h3>
-                
-                <div class="code-editor-header">
-                    <div class="form-group">
-                        <label for="code-filename">Filename:</label>
-                        <input type="text" id="code-filename" placeholder="Enter filename (e.g., script.js)">
-                    </div>
-                    <div class="form-group">
-                        <label for="code-language">Language:</label>
-                        <select id="code-language">
-                            <option value="javascript">JavaScript</option>
-                            <option value="html">HTML</option>
-                            <option value="css">CSS</option>
-                            <option value="python">Python</option>
-                            <option value="java">Java</option>
-                            <option value="csharp">C#</option>
-                            <option value="cpp">C++</option>
-                            <option value="php">PHP</option>
-                            <option value="ruby">Ruby</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                            <option value="swift">Swift</option>
-                            <option value="typescript">TypeScript</option>
-                            <option value="sql">SQL</option>
-                            <option value="shell">Shell/Bash</option>
-                            <option value="markdown">Markdown</option>
-                            <option value="json">JSON</option>
-                            <option value="xml">XML</option>
-                            <option value="yaml">YAML</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="code-editor-container" class="code-editor-container"></div>
-                
-                <div class="modal-buttons">
-                    <button id="save-code-btn">Save to Chat</button>
-                    <button id="copy-code-btn">Copy Code</button>
-                    <button id="clear-code-btn">Clear</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Extract Data Modal -->
-        <div id="extract-data-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h3 id="extract-data-title">Extracted Data</h3>
-                
-                <div id="extract-data-content" class="extract-data-content"></div>
-                
-                <div class="modal-buttons">
-                    <button id="copy-extracted-data-btn">Copy</button>
-                    <button id="close-extract-data-btn">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Include highlight.js for code syntax highlighting -->
@@ -1197,4 +962,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="app.js"></script>
 </body>
-</html>
+                                </html>
